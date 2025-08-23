@@ -4,10 +4,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { connectDB } from "./src/config/db";
 import healthRoutes from "./src/routes/health.routes";
-import authRoutes from "./src/routes/auth.routes";
+import authRoutes from "./src/routes/auth/auth.routes";
 import { authenticateJWT, authorizeRoles } from "./src/middleware/auth";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
+import router from "./src/routes/routes";
 
 dotenv.config();
 
@@ -27,12 +28,26 @@ const swaggerOptions = {
       version: "1.0.0",
       description: "API documentation for the FairCode Blog backend",
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    },
+    security: [{ bearerAuth: [] }],
   },
-  apis: ["./src/routes/*.ts"], // Path to the API docs
+  apis: [
+    __dirname + "/src/routes/*.ts",
+    __dirname + "/src/routes/auth/*.ts"
+  ], // Path to the API docs
 };
 
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api", router);
 
 // routes
 app.use("/api/auth", authRoutes);
