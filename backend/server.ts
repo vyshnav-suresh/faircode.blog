@@ -41,7 +41,8 @@ const swaggerOptions = {
   },
   apis: [
     __dirname + "/src/routes/*.ts",
-    __dirname + "/src/routes/auth/*.ts"
+    __dirname + "/src/routes/auth/*.ts",
+    __dirname + "/src/routes/user/*.ts"
   ], // Path to the API docs
 };
 

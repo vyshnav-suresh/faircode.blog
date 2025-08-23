@@ -5,9 +5,11 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: "user" | "admin";
+  deleted: boolean;
 }
 
 const userSchema = new Schema<IUser>({
+  deleted: { type: Boolean, default: false },
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
