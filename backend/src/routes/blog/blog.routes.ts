@@ -2,6 +2,7 @@ import { Router } from "express";
 import Blog from "../../models/blog.model";
 import { authenticateJWT } from "../../middleware/auth";
 import commentRoutes from "./comment.routes";
+import jwt from "jsonwebtoken";
 
 
 /**
@@ -33,6 +34,7 @@ const router = Router();
  *       200:
  *         description: List of blogs
  */
+
 router.get("/", async (req, res) => {
   const { tag, author, title, page = 1, limit = 10 } = req.query;
   const filter: any = { deleted: false };
@@ -46,8 +48,31 @@ router.get("/", async (req, res) => {
     .skip(skip)
     .limit(parseInt(limit as string));
   const total = await Blog.countDocuments(filter);
+
+  // Try to get userId from JWT if present
+  let userId = null;
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
+      userId = decoded.userId;
+    } catch (err) {
+      // Invalid token, ignore
+    }
+  }
+
+  // Add 'edit' field
+  const blogsWithEdit = blogs.map((blog: any) => {
+    let edit = false;
+    if (userId && blog.createdBy && blog.createdBy._id) {
+      edit = blog.createdBy._id.toString() === userId;
+    }
+    return { ...blog.toObject(), edit };
+  });
+
   res.json({
-    data: blogs,
+    data: blogsWithEdit,
     page: parseInt(page as string),
     limit: parseInt(limit as string),
     total,
@@ -75,9 +100,35 @@ router.get("/", async (req, res) => {
  *         description: Blog not found
  */
 router.get("/:id", async (req, res) => {
+  console.log("wearehere");
+  
   const blog = await Blog.findOne({ _id: req.params.id, deleted: false }).populate("createdBy", "username");
   if (!blog) return res.status(404).json({ message: "Blog not found" });
-  res.json(blog);
+
+  // Try to get userId from JWT if present
+  let userId = null;
+  const authHeader = req.headers.authorization;
+  console.log("authHeader",req.headers);
+  
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+
+    const token = authHeader.split(" ")[1];
+
+    try {
+      const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string||"supersecret");
+      console.log("decoded", decoded);
+      userId = decoded.userId;
+    } catch (err) {
+      console.log("err", err);
+      
+      // Invalid token, ignore
+    }
+  }
+  let edit = false;
+  if (userId && blog.createdBy && blog.createdBy._id) {
+    edit = blog.createdBy._id.toString() === userId;
+  }
+  res.json({ ...blog.toObject(), edit });
 });
 
 /**
