@@ -3,8 +3,50 @@ import Comment from "../../models/comment.model";
 import Blog from "../../models/blog.model";
 import { authenticateJWT } from "../../middleware/auth";
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Comment
+ *     description: Blog post comments (authenticated users only for create/edit/delete)
+ */
 const router = Router();
 
+/**
+ * @swagger
+ * /api/blog/{blogId}/comments:
+ *   post:
+ *     summary: Add a comment to a blog post (auth required)
+ *     tags: [Comment]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Comment created
+ *       400:
+ *         description: Content required
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Blog not found
+ */
 // Add a comment to a blog post
 router.post("/:blogId", authenticateJWT, async (req: any, res) => {
   const { blogId } = req.params;
@@ -20,6 +62,25 @@ router.post("/:blogId", authenticateJWT, async (req: any, res) => {
   res.status(201).json(comment);
 });
 
+/**
+ * @swagger
+ * /api/blog/{blogId}/comments:
+ *   get:
+ *     summary: Get all comments for a blog post
+ *     tags: [Comment]
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     responses:
+ *       200:
+ *         description: List of comments
+ *       404:
+ *         description: Blog not found
+ */
 // Get all comments for a blog post
 router.get("/:blogId", async (req, res) => {
   const { blogId } = req.params;
@@ -29,6 +90,50 @@ router.get("/:blogId", async (req, res) => {
   res.json(comments);
 });
 
+/**
+ * @swagger
+ * /api/blog/{blogId}/comments/{commentId}:
+ *   patch:
+ *     summary: Edit a comment (auth required, only author)
+ *     tags: [Comment]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Comment ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - content
+ *             properties:
+ *               content:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Comment updated
+ *       400:
+ *         description: Content required
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (not author)
+ *       404:
+ *         description: Comment not found
+ */
 // Edit a comment (only author)
 router.patch("/:commentId", authenticateJWT, async (req: any, res) => {
   const { commentId } = req.params;
@@ -42,6 +147,37 @@ router.patch("/:commentId", authenticateJWT, async (req: any, res) => {
   res.json(comment);
 });
 
+/**
+ * @swagger
+ * /api/blog/{blogId}/comments/{commentId}:
+ *   delete:
+ *     summary: Delete a comment (auth required, only author, soft delete)
+ *     tags: [Comment]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Comment ID
+ *     responses:
+ *       200:
+ *         description: Comment deleted
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden (not author)
+ *       404:
+ *         description: Comment not found
+ */
 // Delete a comment (soft delete, only author)
 router.delete("/:commentId", authenticateJWT, async (req: any, res) => {
   const { commentId } = req.params;
