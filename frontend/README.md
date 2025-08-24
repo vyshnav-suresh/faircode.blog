@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FairCode Blog Frontend
+
+This is the frontend for the FairCode Blog application, built with Next.js (App Router), React, and TypeScript.
+
+## Features
+- Modern, responsive UI with Tailwind CSS
+- Authentication (NextAuth.js, JWT, Google, Credentials)
+- Blog listing, detail, and editing
+- Rich text editor for blog content
+- User registration and login
+- SSR/CSR hybrid data fetching
+- Role-based UI (edit controls for blog owners)
+- Toast notifications (react-hot-toast)
+- API integration with backend
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js (v18+ recommended)
+- npm
+- Backend API (see `/backend`)
+
+### Installation
+
+```bash
+cd frontend
+npm install
+```
+
+### Configuration
+
+Copy the example environment file and fill in your settings:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env`:
+- `NEXT_PUBLIC_API_BASE_URL` - Backend API base URL (e.g. `http://localhost:5000/api`)
+- `NEXTAUTH_URL` - Your frontend URL (e.g. `http://localhost:3000`)
+- `NEXTAUTH_SECRET` - Secret for NextAuth.js session
+- (Optional) Google client ID/secret for OAuth
+
+### Running the App
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will start on `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+frontend/
+  src/
+    app/               # App Router pages
+    components/        # Reusable UI components
+    utils/             # Helpers (axios, auth, etc.)
+  public/              # Static assets
+  .env.example         # Example env vars
+  package.json         # Dependencies and scripts
+```
 
-## Learn More
+### Main Pages
+- `/`          Home (Landing)
+- `/blog`      Blog list
+- `/blog/[id]` Blog detail
+- `/blog/create` Create new blog (auth)
+- `/register`  User registration
+- `/login`     User login
 
-To learn more about Next.js, take a look at the following resources:
+### Notes
+- Most API requests go through `/src/utils/axios.ts` for base URL and token injection.
+- Blog edit controls are only visible to the creator (based on backend `edit` field).
+- Uses TanStack Query for data fetching and caching.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Scripts
+- `npm run dev`      Start dev server
+- `npm run build`    Build for production
+- `npm start`        Start production server
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For issues or contributions, please open an issue or PR.

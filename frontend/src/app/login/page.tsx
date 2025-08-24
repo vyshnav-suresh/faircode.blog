@@ -43,7 +43,17 @@ export default function Login() {
       toast.error(res.error || "Login failed");
     } else {
       toast.success("Login successful!");
-      router.push("/");
+      // Wait for session to update
+      setTimeout(() => {
+        const role = (session?.user as any)?.role;
+        if (role === "admin") {
+          router.push("/admin");
+        } else if (role === "user") {
+          router.push("/dashboard");
+        } else {
+          router.push("/");
+        }
+      }, 200);
     }
   };
 
