@@ -170,7 +170,9 @@ router.post("/", authenticateJWT, async (req: any, res) => {
 router.patch("/:id", authenticateJWT, async (req: any, res) => {
   const blog = await Blog.findOne({ _id: req.params.id, deleted: false });
   if (!blog) return res.status(404).json({ message: "Blog not found" });
-  if (blog.createdBy.toString() !== req.user.userId) return res.status(403).json({ message: "Forbidden" });
+  const isAdmin = req.user.role === "admin";
+  const isOwner = blog.createdBy.toString() === req.user.userId;
+  if (!isAdmin && !isOwner) return res.status(403).json({ message: "Forbidden" });
   const { title, content, tags } = req.body;
   if (title) blog.title = title;
   if (content) blog.content = content;
@@ -208,7 +210,9 @@ router.patch("/:id", authenticateJWT, async (req: any, res) => {
 router.delete("/:id", authenticateJWT, async (req: any, res) => {
   const blog = await Blog.findOne({ _id: req.params.id, deleted: false });
   if (!blog) return res.status(404).json({ message: "Blog not found" });
-  if (blog.createdBy.toString() !== req.user.userId) return res.status(403).json({ message: "Forbidden" });
+  const isAdmin = req.user.role === "admin";
+  const isOwner = blog.createdBy.toString() === req.user.userId;
+  if (!isAdmin && !isOwner) return res.status(403).json({ message: "Forbidden" });
   blog.deleted = true;
   blog.deletedBy = req.user.userId;
   await blog.save();
