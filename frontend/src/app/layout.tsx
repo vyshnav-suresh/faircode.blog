@@ -18,6 +18,8 @@ export const metadata: Metadata = {
 };
 
 import Providers from '../components/common/providers';
+import Navbar from '../components/common/Navbar';
+import Footer from '../components/common/Footer';
 
 export default function RootLayout({
   children,
@@ -27,7 +29,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <Navbar />
+          <main className="min-h-[85vh] flex flex-col">
+            {children}
+          </main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

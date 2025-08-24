@@ -1,28 +1,31 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-// Example: Protect /dashboard and /profile routes (require token)
 const PROTECTED_PATHS = ['/dashboard', '/profile'];
+const AUTH_PAGES = ['/login', '/register'];
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isProtected = PROTECTED_PATHS.some((path) => pathname.startsWith(path));
+  const isAuthPage = AUTH_PAGES.some((path) => pathname.startsWith(path));
 
-  // Example: Check for auth token (from cookies)
-  if (isProtected) {
-    const token = request.cookies.get('token')?.value;
-    if (!token) {
-      // Redirect to login if not authenticated
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
+  // Check token using next-auth/jwt (supports all session strategies)
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
+
+  // Prevent authenticated users from accessing login/register
+  if (token && isAuthPage) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  // You can add more logic, e.g. logging, custom headers, etc.
+  // Protect dashboard/profile
+  if (isProtected && !token) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
   return NextResponse.next();
 }
 
-// Specify which paths to match (optional, for performance)
 export const config = {
-  matcher: ['/dashboard/:path*', '/profile/:path*'],
+  matcher: ['/dashboard/:path*', '/profile/:path*', '/login', '/register'],
 };
