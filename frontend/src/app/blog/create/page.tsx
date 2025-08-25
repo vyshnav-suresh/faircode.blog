@@ -1,9 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import RichTextEditor from "@/components/common/RichTextEditor";
+import dynamic from "next/dynamic";
 import api from "@/utils/axios";
+import Link from "next/link";
+import { useRouter } from "@bprogress/next";
 
+const RichTextEditor = dynamic(() => import("@/components/common/RichTextEditor"), { ssr: false });
 export default function BlogCreatePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -30,9 +32,9 @@ export default function BlogCreatePage() {
       {/* Sticky header with back button */}
       <div className="w-full max-w-2xl sticky top-0 z-10 mb-6">
         <div className="flex items-center gap-2 bg-white/95 dark:bg-gray-900/90 shadow rounded-t-xl px-4 py-3 border-b border-blue-200 dark:border-gray-800">
-          <a href="/blog" className="text-blue-600 hover:underline font-semibold text-sm flex items-center gap-1">
+          <Link href="/blog" className="text-blue-600 hover:underline font-semibold text-sm flex items-center gap-1">
             ← Back to Blog
-          </a>
+          </Link>
           <span className="ml-auto text-lg font-bold text-blue-700 dark:text-blue-200">Create Blog Post</span>
         </div>
       </div>

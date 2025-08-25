@@ -84,7 +84,7 @@ export default function Login() {
           Login
         </Button>
         <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
-          Don't have an account? <a href="/register" className="text-blue-600 dark:text-blue-400 underline">Register</a>
+          Don&apos;t have an account? <a href="/register" className="text-blue-600 dark:text-blue-400 underline">Register</a>
         </p>
       </form>
     </div>

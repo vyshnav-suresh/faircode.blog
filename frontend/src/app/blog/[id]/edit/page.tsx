@@ -1,8 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import RichTextEditor from "@/components/common/RichTextEditor";
+import dynamic from "next/dynamic";
 import api from "@/utils/axios";
+import Link from "next/link";
+
+const RichTextEditor = dynamic(() => import("@/components/common/RichTextEditor"), { ssr: false });
 
 export default function BlogEditPage() {
   const router = useRouter();
@@ -53,11 +56,11 @@ export default function BlogEditPage() {
       <nav className="w-full max-w-2xl mx-auto px-2 pt-2 pb-2" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm text-blue-700 dark:text-blue-200">
           <li>
-            <a href="/" className="hover:underline font-medium">Home</a>
+            <Link href="/" className="hover:underline font-medium">Home</Link>
           </li>
           <li aria-hidden className="mx-1">/</li>
           <li>
-            <a href="/blog" className="hover:underline font-medium">Blog</a>
+            <Link href="/blog" className="hover:underline font-medium">Blog</Link>
           </li>
           <li aria-hidden className="mx-1">/</li>
           <li className="truncate max-w-[120px] font-semibold text-gray-700 dark:text-white" title={title}>Edit</li>

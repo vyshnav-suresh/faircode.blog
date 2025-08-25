@@ -2,6 +2,10 @@ import React from "react";
 import Link from "next/link";
 import api from "@/utils/axios";
 
+// Disable static prerendering at build time and always fetch at request time
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface BlogPost {
   _id: string;
   title: string;
@@ -18,9 +22,13 @@ function stripAndTruncate(html: string, maxLen: number): string {
 }
 
 async function getBlogPosts(): Promise<{data: BlogPost[],page:number,limit:number,total:number,totalPages:number}> {
-  const url = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000/api";
-  const res = await   api.get(`/blog`);
-  return res.data;
+  try {
+    const res = await api.get(`/blog`);
+    return res.data;
+  } catch (err) {
+    // On build-time or server-side errors (e.g., backend down), return an empty list gracefully
+    return { data: [], page: 1, limit: 10, total: 0, totalPages: 0 };
+  }
 }
 
 export default async function BlogListPage() {  

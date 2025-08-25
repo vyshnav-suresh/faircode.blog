@@ -1,5 +1,6 @@
 import React from "react";
 import { formatLongDate } from "@/utils/date";
+import Link from "next/link";
 
 interface BlogPost {
   _id: string;
@@ -38,11 +39,11 @@ export default function BlogDetailComponent({ post }: BlogDetailComponentProps) 
       <nav className="max-w-4xl mx-auto px-4 pt-6 pb-2" aria-label="Breadcrumb">
         <ol className="flex items-center space-x-2 text-sm text-blue-700 dark:text-blue-200">
           <li>
-            <a href="/" className="hover:underline font-medium">Home</a>
+            <Link href="/" className="hover:underline font-medium">Home</Link>
           </li>
           <li aria-hidden className="mx-1">/</li>
           <li>
-            <a href="/blog" className="hover:underline font-medium">Blog</a>
+            <Link href="/blog" className="hover:underline font-medium">Blog</Link>
           </li>
           <li aria-hidden className="mx-1">/</li>
           <li className="truncate max-w-[180px] font-semibold text-gray-700 dark:text-white" title={post.title}>{post.title}</li>
